@@ -75,7 +75,7 @@ public class HandshakeWebSocketService implements WebSocketService, Lifecycle {
 			HandshakeWebSocketService.class.getClassLoader());
 
 	private static final boolean reactorNettyPresent = ClassUtils.isPresent(
-			"reactor.ipc.netty.http.server.HttpServerResponse",
+			"reactor.netty.http.server.HttpServerResponse",
 			HandshakeWebSocketService.class.getClassLoader());
 
 
@@ -207,10 +207,6 @@ public class HandshakeWebSocketService implements WebSocketService, Lifecycle {
 		ServerHttpRequest request = exchange.getRequest();
 		HttpMethod method = request.getMethod();
 		HttpHeaders headers = request.getHeaders();
-
-		if (logger.isDebugEnabled()) {
-			logger.debug("Handling " + request.getURI() + " with headers: " + headers);
-		}
 
 		if (HttpMethod.GET != method) {
 			return Mono.error(new MethodNotAllowedException(

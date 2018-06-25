@@ -1,16 +1,10 @@
 description = "Spring WebSocket"
 
-apply plugin: "io.spring.dependency-management"
-
 dependencyManagement {
 	imports {
 		mavenBom "io.projectreactor:reactor-bom:${reactorVersion}"
 		mavenBom "io.netty:netty-bom:${nettyVersion}"
 	}
-	resolutionStrategy {
-		cacheChangingModulesFor 0, 'seconds'
-	}
-	applyMavenExclusions = false
 }
 
 dependencies {
@@ -44,5 +38,5 @@ dependencies {
 	optional("com.fasterxml.jackson.core:jackson-databind:${jackson2Version}")
 	testCompile("org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}")
 	testCompile("org.apache.tomcat.embed:tomcat-embed-websocket:${tomcatVersion}")
-	testCompile("io.projectreactor.ipc:reactor-netty")
+	testCompile("io.projectreactor.netty:reactor-netty")
 }
