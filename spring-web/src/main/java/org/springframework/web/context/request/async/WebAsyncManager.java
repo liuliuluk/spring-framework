@@ -211,7 +211,7 @@ public final class WebAsyncManager {
 	}
 
 	/**
-	 * Register one or more {@link DeferredResultProcessingInterceptor}s without a specified key.
+	 * Register one or more {@link DeferredResultProcessingInterceptor DeferredResultProcessingInterceptors} without a specified key.
 	 * The default key is derived from the interceptor class name and hash code.
 	 * @param interceptors one or more interceptors to register
 	 */
@@ -345,13 +345,14 @@ public final class WebAsyncManager {
 
 		if (this.asyncWebRequest.isAsyncComplete()) {
 			if (logger.isDebugEnabled()) {
-				logger.debug("Async request already complete for " + formatRequestUri());
+				logger.debug("Async result set but request already complete: " + formatRequestUri());
 			}
 			return;
 		}
 
 		if (logger.isDebugEnabled()) {
-			logger.debug("Async result ready, dispatch to " + formatRequestUri());
+			boolean isError = result instanceof Throwable;
+			logger.debug("Async " + (isError ? "error" : "result set") + ", dispatch to " + formatRequestUri());
 		}
 		this.asyncWebRequest.dispatch();
 	}

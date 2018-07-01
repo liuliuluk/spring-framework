@@ -25,7 +25,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
 
-import static org.springframework.test.util.AssertionErrors.*;
+import static org.springframework.test.util.AssertionErrors.assertEquals;
+import static org.springframework.test.util.AssertionErrors.assertTrue;
+import static org.springframework.test.util.AssertionErrors.fail;
 
 /**
  * Assertions on headers of the response.
@@ -60,7 +62,7 @@ public class HeaderAssertions {
 	 * Expect a header with the given name whose first value matches the
 	 * provided regex pattern.
 	 * @param name the header name
-	 * @param pattern String pattern to pass to {@link Pattern#compile(String)}
+	 * @param pattern the String pattern to pass to {@link Pattern#compile(String)}
 	 */
 	public WebTestClient.ResponseSpec valueMatches(String name, String pattern) {
 		String value = getHeaders().getFirst(name);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2017 the original author or authors.
+ * Copyright 2002-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.ResolvableType;
 import org.springframework.lang.Nullable;
+import org.springframework.util.ObjectUtils;
 
 /**
  * Descriptor for a specific dependency that is about to be injected.
@@ -352,7 +353,6 @@ public class DependencyDescriptor extends InjectionPoint implements Serializable
 						Type[] args = ((ParameterizedType) type).getActualTypeArguments();
 						type = args[args.length - 1];
 					}
-					// TODO: Object.class if unresolvable
 				}
 				if (type instanceof Class) {
 					return (Class<?>) type;
@@ -386,6 +386,11 @@ public class DependencyDescriptor extends InjectionPoint implements Serializable
 		DependencyDescriptor otherDesc = (DependencyDescriptor) other;
 		return (this.required == otherDesc.required && this.eager == otherDesc.eager &&
 				this.nestingLevel == otherDesc.nestingLevel && this.containingClass == otherDesc.containingClass);
+	}
+
+	@Override
+	public int hashCode() {
+		return 31 * super.hashCode() + ObjectUtils.nullSafeHashCode(this.containingClass);
 	}
 
 

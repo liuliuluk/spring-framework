@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2017 the original author or authors.
+ * Copyright 2002-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,9 +86,7 @@ class ReactiveTypeHandler {
 		this(ReactiveAdapterRegistry.getSharedInstance(), new SyncTaskExecutor(), new ContentNegotiationManager());
 	}
 
-	ReactiveTypeHandler(ReactiveAdapterRegistry registry, TaskExecutor executor,
-			ContentNegotiationManager manager) {
-
+	ReactiveTypeHandler(ReactiveAdapterRegistry registry, TaskExecutor executor, ContentNegotiationManager manager) {
 		Assert.notNull(registry, "ReactiveAdapterRegistry is required");
 		Assert.notNull(executor, "TaskExecutor is required");
 		Assert.notNull(manager, "ContentNegotiationManager is required");
@@ -120,7 +118,7 @@ class ReactiveTypeHandler {
 		ReactiveAdapter adapter = this.reactiveRegistry.getAdapter(returnValue.getClass());
 		Assert.state(adapter != null, "Unexpected return value: " + returnValue);
 
-		ResolvableType elementType = ResolvableType.forMethodParameter(returnType).getGeneric(0);
+		ResolvableType elementType = ResolvableType.forMethodParameter(returnType).getGeneric();
 		Class<?> elementClass = elementType.resolve(Object.class);
 
 		Collection<MediaType> mediaTypes = getMediaTypes(request);
@@ -211,12 +209,9 @@ class ReactiveTypeHandler {
 		@Override
 		public final void onSubscribe(Subscription subscription) {
 			this.subscription = subscription;
-			if (logger.isTraceEnabled()) {
-				logger.trace("Subscribed to Publisher for " + this.emitter);
-			}
 			this.emitter.onTimeout(() -> {
-				if (logger.isDebugEnabled()) {
-					logger.debug("Connection timeout for " + this.emitter);
+				if (logger.isTraceEnabled()) {
+					logger.trace("Connection timeout for " + this.emitter);
 				}
 				terminate();
 				this.emitter.complete();
@@ -249,7 +244,7 @@ class ReactiveTypeHandler {
 				schedule();
 			}
 		}
-		
+
 		private void schedule() {
 			try {
 				this.taskExecutor.execute(this);
@@ -264,7 +259,7 @@ class ReactiveTypeHandler {
 				}
 			}
 		}
-		
+
 		@Override
 		public void run() {
 			if (this.done) {
@@ -284,33 +279,33 @@ class ReactiveTypeHandler {
 					this.subscription.request(1);
 				}
 				catch (final Throwable ex) {
-					if (logger.isDebugEnabled()) {
-						logger.debug("Send error for " + this.emitter, ex);
+					if (logger.isTraceEnabled()) {
+						logger.trace("Send for " + this.emitter + " failed: " + ex);
 					}
 					terminate();
 					return;
 				}
 			}
-			
+
 			if (isTerminated) {
 				this.done = true;
 				Throwable ex = this.error;
 				this.error = null;
 				if (ex != null) {
-					if (logger.isDebugEnabled()) {
-						logger.debug("Publisher error for " + this.emitter, ex);
+					if (logger.isTraceEnabled()) {
+						logger.trace("Publisher for " + this.emitter + " failed: " + ex);
 					}
 					this.emitter.completeWithError(ex);
 				}
 				else {
-					if (logger.isDebugEnabled()) {
-						logger.debug("Publisher completed for " + this.emitter);
+					if (logger.isTraceEnabled()) {
+						logger.trace("Publisher for " + this.emitter + " completed");
 					}
 					this.emitter.complete();
 				}
 				return;
 			}
-			
+
 			if (this.executing.decrementAndGet() != 0) {
 				schedule();
 			}
@@ -324,7 +319,6 @@ class ReactiveTypeHandler {
 				this.subscription.cancel();
 			}
 		}
-
 	}
 
 
@@ -407,15 +401,11 @@ class ReactiveTypeHandler {
 
 		private final CollectedValuesList values;
 
-
-		DeferredResultSubscriber(DeferredResult<Object> result, ReactiveAdapter adapter,
-				ResolvableType elementType) {
-
+		DeferredResultSubscriber(DeferredResult<Object> result, ReactiveAdapter adapter, ResolvableType elementType) {
 			this.result = result;
 			this.multiValueSource = adapter.isMultiValue();
 			this.values = new CollectedValuesList(elementType);
 		}
-
 
 		public void connect(ReactiveAdapter adapter, Object returnValue) {
 			Publisher<Object> publisher = adapter.toPublisher(returnValue);
@@ -452,6 +442,10 @@ class ReactiveTypeHandler {
 		}
 	}
 
+
+	/**
+	 * List of collect values where all elements are a specified type.
+	 */
 	@SuppressWarnings("serial")
 	static class CollectedValuesList extends ArrayList<Object> {
 

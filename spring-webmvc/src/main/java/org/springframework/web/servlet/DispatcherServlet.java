@@ -291,60 +291,60 @@ public class DispatcherServlet extends FrameworkServlet {
 		}
 	}
 
-	/** Detect all HandlerMappings or just expect "handlerMapping" bean? */
+	/** Detect all HandlerMappings or just expect "handlerMapping" bean?. */
 	private boolean detectAllHandlerMappings = true;
 
-	/** Detect all HandlerAdapters or just expect "handlerAdapter" bean? */
+	/** Detect all HandlerAdapters or just expect "handlerAdapter" bean?. */
 	private boolean detectAllHandlerAdapters = true;
 
-	/** Detect all HandlerExceptionResolvers or just expect "handlerExceptionResolver" bean? */
+	/** Detect all HandlerExceptionResolvers or just expect "handlerExceptionResolver" bean?. */
 	private boolean detectAllHandlerExceptionResolvers = true;
 
-	/** Detect all ViewResolvers or just expect "viewResolver" bean? */
+	/** Detect all ViewResolvers or just expect "viewResolver" bean?. */
 	private boolean detectAllViewResolvers = true;
 
-	/** Throw a NoHandlerFoundException if no Handler was found to process this request? **/
+	/** Throw a NoHandlerFoundException if no Handler was found to process this request? *.*/
 	private boolean throwExceptionIfNoHandlerFound = false;
 
-	/** Perform cleanup of request attributes after include request? */
+	/** Perform cleanup of request attributes after include request?. */
 	private boolean cleanupAfterInclude = true;
 
 	/** Do not log potentially sensitive information (params at DEBUG and headers at TRACE). */
 	private boolean disableLoggingRequestDetails = false;
 
-	/** MultipartResolver used by this servlet */
+	/** MultipartResolver used by this servlet. */
 	@Nullable
 	private MultipartResolver multipartResolver;
 
-	/** LocaleResolver used by this servlet */
+	/** LocaleResolver used by this servlet. */
 	@Nullable
 	private LocaleResolver localeResolver;
 
-	/** ThemeResolver used by this servlet */
+	/** ThemeResolver used by this servlet. */
 	@Nullable
 	private ThemeResolver themeResolver;
 
-	/** List of HandlerMappings used by this servlet */
+	/** List of HandlerMappings used by this servlet. */
 	@Nullable
 	private List<HandlerMapping> handlerMappings;
 
-	/** List of HandlerAdapters used by this servlet */
+	/** List of HandlerAdapters used by this servlet. */
 	@Nullable
 	private List<HandlerAdapter> handlerAdapters;
 
-	/** List of HandlerExceptionResolvers used by this servlet */
+	/** List of HandlerExceptionResolvers used by this servlet. */
 	@Nullable
 	private List<HandlerExceptionResolver> handlerExceptionResolvers;
 
-	/** RequestToViewNameTranslator used by this servlet */
+	/** RequestToViewNameTranslator used by this servlet. */
 	@Nullable
 	private RequestToViewNameTranslator viewNameTranslator;
 
-	/** FlashMapManager used by this servlet */
+	/** FlashMapManager used by this servlet. */
 	@Nullable
 	private FlashMapManager flashMapManager;
 
-	/** List of ViewResolvers used by this servlet */
+	/** List of ViewResolvers used by this servlet. */
 	@Nullable
 	private List<ViewResolver> viewResolvers;
 
@@ -530,7 +530,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		initViewResolvers(context);
 		initFlashMapManager(context);
 
-		if (logger.isDebugEnabled() || logger.isTraceEnabled()) {
+		if (logger.isDebugEnabled()) {
 			if (this.disableLoggingRequestDetails) {
 				logger.debug("Logging request parameters and headers is OFF.");
 			}
@@ -988,7 +988,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	}
 
 	private void logRequest(HttpServletRequest request) {
-		if (logger.isDebugEnabled() || logger.isTraceEnabled()) {
+		if (logger.isDebugEnabled()) {
 
 			String params = "";
 			if (!this.disableLoggingRequestDetails) {
@@ -998,9 +998,9 @@ public class DispatcherServlet extends FrameworkServlet {
 			}
 
 			String dispatchType = !request.getDispatcherType().equals(DispatcherType.REQUEST) ?
-					" [" + request.getDispatcherType().name() + "]" : "";
+					"\"" + request.getDispatcherType().name() + "\" dispatch for " : "";
 
-			String message = request.getMethod() + " " + getRequestUri(request) + dispatchType + params;
+			String message = dispatchType + request.getMethod() + " \"" + getRequestUri(request) + "\"" + params;
 
 			if (logger.isTraceEnabled()) {
 				String headers = "";

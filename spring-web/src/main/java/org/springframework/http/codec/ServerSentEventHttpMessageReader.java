@@ -37,8 +37,8 @@ import org.springframework.http.ReactiveHttpInputMessage;
 import org.springframework.lang.Nullable;
 
 /**
- * Reader that supports a stream of {@link ServerSentEvent}s and also plain
- * {@link Object}s which is the same as an {@link ServerSentEvent} with data only.
+ * Reader that supports a stream of {@link ServerSentEvent ServerSentEvents} and also plain
+ * {@link Object Objects} which is the same as an {@link ServerSentEvent} with data only.
  *
  * @author Sebastien Deleuze
  * @author Rossen Stoyanchev
@@ -103,7 +103,7 @@ public class ServerSentEventHttpMessageReader implements HttpMessageReader<Objec
 			Map<String, Object> hints) {
 
 		boolean shouldWrap = isServerSentEvent(elementType);
-		ResolvableType valueType = (shouldWrap ? elementType.getGeneric(0) : elementType);
+		ResolvableType valueType = (shouldWrap ? elementType.getGeneric() : elementType);
 
 		return stringDecoder.decode(message.getBody(), STRING_TYPE, null, Collections.emptyMap())
 				.bufferUntil(line -> line.equals(""))

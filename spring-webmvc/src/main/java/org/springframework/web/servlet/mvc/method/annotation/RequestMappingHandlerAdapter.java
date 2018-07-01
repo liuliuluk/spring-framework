@@ -98,7 +98,7 @@ import org.springframework.web.util.WebUtils;
 
 /**
  * Extension of {@link AbstractHandlerMethodAdapter} that supports
- * {@link RequestMapping} annotated {@code HandlerMethod}s.
+ * {@link RequestMapping} annotated {@code HandlerMethod RequestMapping} annotated {@code HandlerMethods}.
  *
  * <p>Support for custom argument and return value types can be added via
  * {@link #setCustomArgumentResolvers} and {@link #setCustomReturnValueHandlers},
@@ -292,7 +292,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 	}
 
 	/**
-	 * Provide custom {@link ModelAndViewResolver}s.
+	 * Provide custom {@link ModelAndViewResolver ModelAndViewResolvers}.
 	 * <p><strong>Note:</strong> This method is available for backwards
 	 * compatibility only. However, it is recommended to re-write a
 	 * {@code ModelAndViewResolver} as {@link HandlerMethodReturnValueHandler}.
@@ -310,7 +310,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 	}
 
 	/**
-	 * Return the configured {@link ModelAndViewResolver}s, or {@code null}.
+	 * Return the configured {@link ModelAndViewResolver ModelAndViewResolvers}, or {@code null}.
 	 */
 	@Nullable
 	public List<ModelAndViewResolver> getModelAndViewResolvers() {
@@ -418,17 +418,6 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 	 */
 	public void setDeferredResultInterceptors(List<DeferredResultProcessingInterceptor> interceptors) {
 		this.deferredResultInterceptors = interceptors.toArray(new DeferredResultProcessingInterceptor[0]);
-	}
-
-	/**
-	 * Configure the registry for reactive library types to be supported as
-	 * return values from controller methods.
-	 * @since 5.0
-	 * @deprecated as of 5.0.5, in favor of {@link #setReactiveAdapterRegistry}
-	 */
-	@Deprecated
-	public void setReactiveRegistry(ReactiveAdapterRegistry reactiveRegistry) {
-		this.reactiveAdapterRegistry = reactiveRegistry;
 	}
 
 	/**
@@ -825,7 +814,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 			synchronized (this.sessionAttributesHandlerCache) {
 				sessionAttrHandler = this.sessionAttributesHandlerCache.get(handlerType);
 				if (sessionAttrHandler == null) {
-					sessionAttrHandler = new SessionAttributesHandler(handlerType, sessionAttributeStore);
+					sessionAttrHandler = new SessionAttributesHandler(handlerType, this.sessionAttributeStore);
 					this.sessionAttributesHandlerCache.put(handlerType, sessionAttrHandler);
 				}
 			}

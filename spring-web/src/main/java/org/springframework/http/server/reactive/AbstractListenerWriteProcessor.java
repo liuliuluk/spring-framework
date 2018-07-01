@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2017 the original author or authors.
+ * Copyright 2002-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ import org.springframework.util.Assert;
  * @author Violeta Georgieva
  * @author Rossen Stoyanchev
  * @since 5.0
+ * @param <T> the type of element signaled to the {@link Subscriber}
  */
 public abstract class AbstractListenerWriteProcessor<T> implements Processor<T, Void> {
 
@@ -99,7 +100,7 @@ public abstract class AbstractListenerWriteProcessor<T> implements Processor<T, 
 	 * container.
 	 */
 	public final void onWritePossible() {
-		this.logger.trace("Received onWritePossible");
+		logger.trace("Received onWritePossible");
 		this.state.get().onWritePossible(this);
 	}
 
@@ -108,7 +109,7 @@ public abstract class AbstractListenerWriteProcessor<T> implements Processor<T, 
 	 * container to cancel the upstream subscription.
 	 */
 	public void cancel() {
-		this.logger.trace("Received request to cancel");
+		logger.trace("Received request to cancel");
 		if (this.subscription != null) {
 			this.subscription.cancel();
 		}

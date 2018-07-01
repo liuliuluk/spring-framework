@@ -32,8 +32,6 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.synchronoss.cloud.nio.multipart.DefaultPartBodyStreamStorageFactory;
 import org.synchronoss.cloud.nio.multipart.Multipart;
 import org.synchronoss.cloud.nio.multipart.MultipartContext;
@@ -118,7 +116,7 @@ public class SynchronossPartHttpMessageReader extends LoggingCodecSupport implem
 		private final ReactiveHttpInputMessage inputMessage;
 
 		private final DataBufferFactory bufferFactory;
-		
+
 		private final PartBodyStreamStorageFactory streamStorageFactory;
 
 		SynchronossPartGenerator(ReactiveHttpInputMessage inputMessage, DataBufferFactory bufferFactory,
@@ -142,7 +140,7 @@ public class SynchronossPartHttpMessageReader extends LoggingCodecSupport implem
 			NioMultipartParserListener listener = new FluxSinkAdapterListener(emitter, this.bufferFactory, context);
 			NioMultipartParser parser = Multipart
 					.multipart(context)
-					.usePartBodyStreamStorageFactory(streamStorageFactory)
+					.usePartBodyStreamStorageFactory(this.streamStorageFactory)
 					.forNIO(listener);
 
 			this.inputMessage.getBody().subscribe(buffer -> {

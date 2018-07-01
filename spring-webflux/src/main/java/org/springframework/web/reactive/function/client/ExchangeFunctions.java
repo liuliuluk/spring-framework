@@ -93,7 +93,6 @@ public abstract class ExchangeFunctions {
 		@Override
 		public Mono<ClientResponse> exchange(ClientRequest request) {
 			Assert.notNull(request, "ClientRequest must not be null");
-
 			HttpMethod httpMethod = request.method();
 			URI url = request.url();
 
@@ -112,14 +111,14 @@ public abstract class ExchangeFunctions {
 				String formatted = request.url().toString();
 				if (this.disableLoggingRequestDetails) {
 					int index = formatted.indexOf("?");
-					formatted = index != -1 ? formatted.substring(0, index) : formatted;
+					formatted = (index != -1 ? formatted.substring(0, index) : formatted);
 				}
 				logger.debug("HTTP " + request.method() + " " + formatted);
 			}
 		}
 
 		private void logResponse(ClientHttpResponse response) {
-			if (logger.isDebugEnabled() || logger.isTraceEnabled()) {
+			if (logger.isDebugEnabled()) {
 				int code = response.getRawStatusCode();
 				HttpStatus status = HttpStatus.resolve(code);
 				String message = "Response " + (status != null ? status : code);

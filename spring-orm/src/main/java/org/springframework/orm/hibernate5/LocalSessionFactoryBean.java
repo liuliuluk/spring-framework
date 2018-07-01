@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2016 the original author or authors.
+ * Copyright 2002-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,8 @@ import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
 import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
+import org.hibernate.integrator.spi.Integrator;
+import org.hibernate.service.ServiceRegistry;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
@@ -44,15 +46,13 @@ import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.core.type.filter.TypeFilter;
 import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
 
 /**
- * {@link FactoryBean} that creates a Hibernate
- * {@link SessionFactory}. This is the usual way to set up a shared
- * Hibernate SessionFactory in a Spring application context; the SessionFactory can
- * then be passed to Hibernate-based data access objects via dependency injection.
+ * {@link FactoryBean} that creates a Hibernate {@link SessionFactory}. This is the usual
+ * way to set up a shared Hibernate SessionFactory in a Spring application context; the
+ * SessionFactory can then be passed to data access objects via dependency injection.
  *
- * <p>Compatible with Hibernate 5.0/5.1 as well as 5.2, as of Spring 4.3.
+ * <p>Compatible with Hibernate 5.0/5.1 as well as 5.2/5.3, as of Spring 5.1.
  *
  * @author Juergen Hoeller
  * @since 4.2
@@ -119,6 +119,9 @@ public class LocalSessionFactoryBean extends HibernateExceptionTranslator
 
 	@Nullable
 	private AsyncTaskExecutor bootstrapExecutor;
+
+	@Nullable
+	private Integrator[] hibernateIntegrators;
 
 	private boolean metadataSourcesAccessed = false;
 
@@ -351,11 +354,24 @@ public class LocalSessionFactoryBean extends HibernateExceptionTranslator
 	 * then block until Hibernate's bootstrapping completed, if not ready by then.
 	 * For maximum benefit, make sure to avoid early {@code SessionFactory} calls
 	 * in init methods of related beans, even for metadata introspection purposes.
-	 * @see LocalSessionFactoryBuilder#buildSessionFactory(AsyncTaskExecutor)
 	 * @since 4.3
+	 * @see LocalSessionFactoryBuilder#buildSessionFactory(AsyncTaskExecutor)
 	 */
 	public void setBootstrapExecutor(AsyncTaskExecutor bootstrapExecutor) {
 		this.bootstrapExecutor = bootstrapExecutor;
+	}
+
+	/**
+	 * Specify one or more Hibernate {@link Integrator} implementations to apply.
+	 * <p>This will only be applied for an internally built {@link MetadataSources}
+	 * instance. {@link #setMetadataSources} effectively overrides such settings,
+	 * with integrators to be applied to the externally built {@link MetadataSources}.
+	 * @since 5.1
+	 * @see #setMetadataSources
+	 * @see BootstrapServiceRegistryBuilder#applyIntegrator
+	 */
+	public void setHibernateIntegrators(Integrator... hibernateIntegrators) {
+		this.hibernateIntegrators = hibernateIntegrators;
 	}
 
 	/**
@@ -363,9 +379,10 @@ public class LocalSessionFactoryBean extends HibernateExceptionTranslator
 	 * existing one), potentially populated with a custom Hibernate bootstrap
 	 * {@link org.hibernate.service.ServiceRegistry} as well.
 	 * @since 4.3
+	 * @see MetadataSources#MetadataSources(ServiceRegistry)
+	 * @see BootstrapServiceRegistryBuilder#build()
 	 */
 	public void setMetadataSources(MetadataSources metadataSources) {
-		Assert.notNull(metadataSources, "MetadataSources must not be null");
 		this.metadataSourcesAccessed = true;
 		this.metadataSources = metadataSources;
 	}
@@ -384,6 +401,11 @@ public class LocalSessionFactoryBean extends HibernateExceptionTranslator
 			BootstrapServiceRegistryBuilder builder = new BootstrapServiceRegistryBuilder();
 			if (this.resourcePatternResolver != null) {
 				builder = builder.applyClassLoader(this.resourcePatternResolver.getClassLoader());
+			}
+			if (this.hibernateIntegrators != null) {
+				for (Integrator integrator : this.hibernateIntegrators) {
+					builder = builder.applyIntegrator(integrator);
+				}
 			}
 			this.metadataSources = new MetadataSources(builder.build());
 		}
@@ -526,7 +548,7 @@ public class LocalSessionFactoryBean extends HibernateExceptionTranslator
 	 * <p>The default implementation invokes LocalSessionFactoryBuilder's buildSessionFactory.
 	 * A custom implementation could prepare the instance in a specific way (e.g. applying
 	 * a custom ServiceRegistry) or use a custom SessionFactoryImpl subclass.
-	 * @param sfb LocalSessionFactoryBuilder prepared by this LocalSessionFactoryBean
+	 * @param sfb a LocalSessionFactoryBuilder prepared by this LocalSessionFactoryBean
 	 * @return the SessionFactory instance
 	 * @see LocalSessionFactoryBuilder#buildSessionFactory
 	 */

@@ -80,9 +80,12 @@ import org.springframework.util.concurrent.ListenableFutureTask;
  */
 public class StompBrokerRelayMessageHandler extends AbstractBrokerMessageHandler {
 
+	/**
+	 * The system session ID.
+	 */
 	public static final String SYSTEM_SESSION_ID = "_system_";
 
-	/** STOMP recommended error of margin for receiving heartbeats */
+	/** STOMP recommended error of margin for receiving heartbeats. */
 	private static final long HEARTBEAT_MULTIPLIER = 3;
 
 	/**
@@ -535,7 +538,7 @@ public class StompBrokerRelayMessageHandler extends AbstractBrokerMessageHandler
 				}
 				return;
 			}
-			stats.incrementDisconnectCount();
+			this.stats.incrementDisconnectCount();
 			handler.forward(message, stompAccessor);
 		}
 		else {
@@ -574,7 +577,7 @@ public class StompBrokerRelayMessageHandler extends AbstractBrokerMessageHandler
 		private volatile boolean isStompConnected;
 
 
-		private StompConnectionHandler(String sessionId, StompHeaderAccessor connectHeaders) {
+		protected StompConnectionHandler(String sessionId, StompHeaderAccessor connectHeaders) {
 			this(sessionId, connectHeaders, true);
 		}
 

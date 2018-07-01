@@ -67,7 +67,7 @@ public class VersionResourceResolver extends AbstractResourceResolver {
 
 	private AntPathMatcher pathMatcher = new AntPathMatcher();
 
-	/** Map from path pattern -> VersionStrategy */
+	/** Map from path pattern -> VersionStrategy. */
 	private final Map<String, VersionStrategy> versionStrategyMap = new LinkedHashMap<>();
 
 
@@ -207,9 +207,7 @@ public class VersionResourceResolver extends AbstractResourceResolver {
 						}
 						return chain.resolveResource(null, baseUrl, locations)
 								.flatMap(resource -> strategy.getResourceVersion(resource)
-										.map(version -> {
-											return strategy.addVersion(baseUrl, version);
-										}));
+										.map(version -> strategy.addVersion(baseUrl, version)));
 					}
 					return Mono.empty();
 				});
@@ -306,23 +304,18 @@ public class VersionResourceResolver extends AbstractResourceResolver {
 
 		@Override
 		public String getDescription() {
-			return original.getDescription();
+			return this.original.getDescription();
 		}
 
 		@Override
 		public InputStream getInputStream() throws IOException {
-			return original.getInputStream();
+			return this.original.getInputStream();
 		}
 
 		@Override
 		public HttpHeaders getResponseHeaders() {
-			HttpHeaders headers;
-			if(this.original instanceof HttpResource) {
-				headers = ((HttpResource) this.original).getResponseHeaders();
-			}
-			else {
-				headers = new HttpHeaders();
-			}
+			HttpHeaders headers = (this.original instanceof HttpResource ?
+					((HttpResource) this.original).getResponseHeaders() : new HttpHeaders());
 			headers.setETag("\"" + this.version + "\"");
 			return headers;
 		}
